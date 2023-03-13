@@ -36,7 +36,15 @@ kotlin {
     }
 
     // js
-    js(IR)
+    js(IR) {
+        browser {
+            commonWebpackConfig {
+                cssSupport {
+                    enabled.set(true)
+                }
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting
