@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "ksoc-client"
 include(":ksoc-client-android")
 include(":ksoc-client-shared")
+include(":ksoc-client-nativetest")
