@@ -35,6 +35,9 @@ kotlin {
         }
     }
 
+    // js
+    js(IR)
+
     sourceSets {
         val commonMain by getting
         val commonTest by getting {
@@ -67,6 +70,9 @@ kotlin {
             iosArm64Test.dependsOn(this)
             iosSimulatorArm64Test.dependsOn(this)
         }
+
+        val jsMain by getting
+        val jsTest by getting
     }
 }
 
