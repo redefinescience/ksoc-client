@@ -51,6 +51,7 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("io.insert-koin:koin-core:3.3.2")
             }
         }
         val commonTest by getting {
@@ -59,7 +60,11 @@ kotlin {
             }
         }
 
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation("io.insert-koin:koin-android:3.3.2")
+            }
+        }
         val androidUnitTest by getting
 
         val nativeMain by getting
