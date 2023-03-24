@@ -1,19 +1,11 @@
 package com.kotlineering.ksoc.client.auth
 
 class IosAuthStore: AuthStore {
-    override fun storeTokens(tokens: Tokens?) {
+    override fun storeAuthInfo(authInfo: AuthInfo?) {
         TODO("Not yet implemented")
     }
 
-    override fun fetchTokens(): Tokens? {
-        TODO("Not yet implemented")
-    }
-
-    override fun fetchUser(): CurrentUser? {
-        TODO("Not yet implemented")
-    }
-
-    override fun storeUser(user: CurrentUser?) {
+    override fun fetchAuthInfo(): AuthInfo? {
         TODO("Not yet implemented")
     }
 }
