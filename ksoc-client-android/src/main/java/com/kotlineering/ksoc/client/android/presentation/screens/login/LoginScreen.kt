@@ -1,6 +1,5 @@
 package com.kotlineering.ksoc.client.android.presentation.screens.login
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.ClickableText
@@ -10,24 +9,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.lifecycle.ViewModel
 import com.kotlineering.ksoc.client.auth.AuthRepository
 import org.koin.androidx.compose.koinViewModel
-
-class LoginScreenViewModel(
-    private val authRepository: AuthRepository
-) : ViewModel() {
-
-    init {
-        Log.d("Test", "LoginScreenViewModel Created")
-    }
-
-    fun login(type: AuthRepository.AuthType) = authRepository.login(type)
-
-    override fun onCleared() {
-        Log.d("Test", "LoginScreenViewModel Cleared")
-    }
-}
 
 @Composable
 fun LoginScreen(

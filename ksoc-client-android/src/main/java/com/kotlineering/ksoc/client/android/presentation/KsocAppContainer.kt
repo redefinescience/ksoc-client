@@ -27,6 +27,13 @@ fun KsocAppContainer(
     modifier: Modifier = Modifier,
     viewModel: KsocAppContainerViewModel = koinViewModel()
 ) {
+    val navController = rememberNavController()
+    LaunchedEffect("navigator") {
+        viewModel.navigator.navTarget.onEach {
+            navController.navigate(it.target.route, it.navOptions, it.navigatorExtras)
+        }.launchIn(this)
+    }
+
     LaunchedEffect("authState") {
         viewModel.authInfo.onEach { authState ->
             if (authState == null) {
@@ -40,13 +47,6 @@ fun KsocAppContainer(
                     popUpTo(NavTarget.Login.route) { inclusive = true }
                 }
             }
-        }.launchIn(this)
-    }
-
-    val navController = rememberNavController()
-    LaunchedEffect("navigator") {
-        viewModel.navigator.navTarget.onEach {
-            navController.navigate(it.target.route, it.navOptions, it.navigatorExtras)
         }.launchIn(this)
     }
 
