@@ -10,9 +10,9 @@ class AndroidAuthStore(
         prefs.edit().apply {
             authInfo?.apply {
                 putString(AuthStore.KEY_BEARER_TOKEN, bearer)
-                putLong(AuthStore.KEY_REFRESH_EXPIRY, bearerExpiry.toEpochMilliseconds())
+                putLong(AuthStore.KEY_BEARER_EXPIRY, bearerExpiry.toEpochMilliseconds())
                 putString(AuthStore.KEY_REFRESH_TOKEN, refresh)
-                putLong(AuthStore.KEY_BEARER_TOKEN, refreshExpiry.toEpochMilliseconds())
+                putLong(AuthStore.KEY_REFRESH_EXPIRY, refreshExpiry.toEpochMilliseconds())
                 putString(AuthStore.KEY_CURRENT_USER_ID, userId)
             } ?: run {
                 remove(AuthStore.KEY_BEARER_TOKEN)
