@@ -1,4 +1,4 @@
-package com.kotlineering.ksoc.client.android.presentation.screens.login
+package com.kotlineering.ksoc.client.android.presentation.screens.login.webview
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -7,6 +7,7 @@ import android.webkit.WebView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import com.kotlineering.ksoc.client.android.presentation.screens.login.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("SetJavaScriptEnabled")

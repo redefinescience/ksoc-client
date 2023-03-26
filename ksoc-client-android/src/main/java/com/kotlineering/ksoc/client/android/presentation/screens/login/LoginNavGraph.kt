@@ -4,6 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.kotlineering.ksoc.client.android.presentation.screens.login.webview.LoginWebView
+import com.kotlineering.ksoc.client.android.presentation.screens.login.webview.MicrosoftLoginWebViewClient
 
 internal enum class LoginNavTarget(val route: String) {
     Root("root"),

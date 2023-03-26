@@ -1,4 +1,4 @@
-package com.kotlineering.ksoc.client.android.presentation.screens.login
+package com.kotlineering.ksoc.client.android.presentation.screens.login.webview
 
 import android.webkit.WebViewClient
 import com.kotlineering.ksoc.client.auth.AuthRepository
