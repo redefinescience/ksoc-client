@@ -6,5 +6,5 @@ import com.kotlineering.ksoc.client.auth.AuthRepository
 class LoginScreenViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
-    fun login(type: AuthRepository.AuthType) = authRepository.login(type)
+    fun login(type: AuthRepository.AuthType) = authRepository.login(type, "")
 }

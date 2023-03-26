@@ -9,11 +9,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
+import androidx.navigation.NavController
 import com.kotlineering.ksoc.client.auth.AuthRepository
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: LoginScreenViewModel = koinViewModel()
 ) {
@@ -25,7 +27,7 @@ fun LoginScreen(
             Text("Login")
             Text("")
             ClickableText(text = AnnotatedString("Log In - Microsoft"), onClick = {
-                viewModel.login(AuthRepository.AuthType.Microsoft)
+                navController.navigate(LoginNavTarget.Microsoft.route)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Google"), onClick = {

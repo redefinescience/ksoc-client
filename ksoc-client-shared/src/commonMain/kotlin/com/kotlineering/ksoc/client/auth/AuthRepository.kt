@@ -27,14 +27,16 @@ class AuthRepository(
         authInfo = null
     }
 
-    fun login(type: AuthType) {
+    fun login(type: AuthType, idToken: String) {
         // TODO: Stub
+        // We will actually get this back from backend server after validating id token.
+        // Server will issue bearer & refresh token different from the id, of course.
         authInfo = AuthInfo(
-            "testToken",
+            idToken,
             Clock.System.now(),
             "testRefresh",
             Clock.System.now(),
-            "testUer(${type.toString()})"
+            "testUer($type)"
         )
     }
 }
