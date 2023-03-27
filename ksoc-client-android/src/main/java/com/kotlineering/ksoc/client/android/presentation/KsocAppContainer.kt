@@ -28,12 +28,15 @@ fun KsocAppContainer(
     viewModel: KsocAppContainerViewModel = koinViewModel()
 ) {
     val navController = rememberNavController()
+
+    // Listen for, and execute navigation requests
     LaunchedEffect("navigator") {
         viewModel.navigator.navTarget.onEach {
             navController.navigate(it.target.route, it.navOptions, it.navigatorExtras)
         }.launchIn(this)
     }
 
+    // Listen for changes in authentication, force navigation to login or home appropriately
     LaunchedEffect("authState") {
         viewModel.authInfo.onEach { authState ->
             if (authState == null) {
