@@ -31,15 +31,15 @@ fun LoginScreen(
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Google"), onClick = {
-                viewModel.login(AuthRepository.AuthType.Google)
+                viewModel.fakeLogin(AuthRepository.AuthType.Google)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Apple"), onClick = {
-                viewModel.login(AuthRepository.AuthType.Apple)
+                viewModel.fakeLogin(AuthRepository.AuthType.Apple)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Facebook"), onClick = {
-                viewModel.login(AuthRepository.AuthType.Facebook)
+                viewModel.fakeLogin(AuthRepository.AuthType.Facebook)
             })
         }
     }
