@@ -25,8 +25,8 @@ fun LoginWebView(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 webViewClient = client.apply {
-                    onSuccess = { type, token ->
-                        viewModel.authRepository.login(type, token)
+                    onSuccess = { type, code ->
+                        viewModel.login(type, code)
                     }
                 }
                 settings.apply {

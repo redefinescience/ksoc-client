@@ -15,14 +15,13 @@ class MicrosoftLoginWebViewClient : LoginWebViewClient() {
             "&response_mode=query" +
             "&state=12345" +
             "&nonce=678910"
-
     override fun shouldOverrideUrlLoading(
         view: WebView?,
         request: WebResourceRequest?
     ): Boolean = null != request?.url?.takeIf {
         // TODO: This condition should be improved, and include the 'state' & 'nonce' validation
         it.host == "localhost" && it.port == 5000
-    }?.getQueryParameter("code")?.let { id_token ->
-        onSuccess?.invoke(AuthRepository.AuthType.Microsoft, id_token)
+    }?.getQueryParameter("code")?.let { code ->
+        onSuccess?.invoke(AuthRepository.AuthType.Microsoft, code)
     }
 }

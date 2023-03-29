@@ -1,6 +1,8 @@
 package com.kotlineering.ksoc.client.koin
 
+import com.kotlineering.ksoc.client.remote.AuthApi
 import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.http.HttpClientManager
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -14,7 +16,10 @@ fun initKoin(appDeclaration: KoinAppDeclaration? = null) = startKoin {
 }
 
 fun commonModule() = module {
-    single {
-        AuthRepository(get())
-    }
+    single { HttpClientManager(get()) }
+
+    single { get<HttpClientManager>().client }
+    single { AuthRepository(get(), get(), get(), get()) }
+
+    single { AuthApi(get()) }
 }
