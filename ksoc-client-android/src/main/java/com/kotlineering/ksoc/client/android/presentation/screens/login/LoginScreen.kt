@@ -9,15 +9,20 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.navigation.NavController
+import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavigator
 import com.kotlineering.ksoc.client.auth.AuthRepository
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LoginScreen(
-    navController: NavController,
-    modifier: Modifier = Modifier,
+fun LoginScreenRoute(
+    navigator: KsocNavigator,
     viewModel: LoginScreenViewModel = koinViewModel()
+) = LoginScreen(navigator, viewModel::fakeLogin)
+
+@Composable
+fun LoginScreen(
+    navigator: KsocNavigator,
+    onFakeLogin: (AuthRepository.AuthType) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -27,19 +32,19 @@ fun LoginScreen(
             Text("Login")
             Text("")
             ClickableText(text = AnnotatedString("Log In - Microsoft"), onClick = {
-                navController.navigate(LoginNavTarget.Microsoft.route)
+                navigator.navigate(LoginNavTarget.Microsoft.route)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Google"), onClick = {
-                viewModel.fakeLogin(AuthRepository.AuthType.Google)
+                onFakeLogin(AuthRepository.AuthType.Google)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Apple"), onClick = {
-                viewModel.fakeLogin(AuthRepository.AuthType.Apple)
+                onFakeLogin(AuthRepository.AuthType.Apple)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Facebook"), onClick = {
-                viewModel.fakeLogin(AuthRepository.AuthType.Facebook)
+                onFakeLogin(AuthRepository.AuthType.Facebook)
             })
         }
     }

@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.RefreshTokensParams
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.plugin
@@ -20,14 +21,14 @@ class HttpClientManager(
 
     fun setAuth(
         auth: AuthInfo?,
-        refresh: (() -> BearerTokens?)?
+        refresh: (suspend (RefreshTokensParams) -> BearerTokens?)?
     ) = client.apply {
         plugin(Auth).apply {
             providers.clear()
             auth?.let {
                 bearer {
                     loadTokens { BearerTokens(auth.bearer, auth.refresh) }
-                    refreshTokens { refresh?.invoke() }
+                    refreshTokens { refresh?.invoke(this@refreshTokens) }
                 }
             }
         }

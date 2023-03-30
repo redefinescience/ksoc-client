@@ -4,10 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavHost
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavigator
-import com.kotlineering.ksoc.client.android.presentation.navigation.NavTarget
+import com.kotlineering.ksoc.client.android.presentation.navigation.RootNavTarget
 import com.kotlineering.ksoc.client.auth.AuthRepository
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,7 +19,7 @@ class KsocAppContainerViewModel(
 ) : ViewModel() {
     val navigator = KsocNavigator()
 
-    val authInfo = authRepository.authInfoFlow
+    val authInfo = authRepository.authInfo
     var wasLoggedIn = false
 }
 
@@ -32,7 +33,7 @@ fun KsocAppContainer(
     // Listen for, and execute navigation requests
     LaunchedEffect("navigator") {
         viewModel.navigator.navTarget.onEach {
-            navController.navigate(it.target.route, it.navOptions, it.navigatorExtras)
+            navController.navigate(it.route, it.navOptions, it.navigatorExtras)
         }.launchIn(this)
     }
 
@@ -41,13 +42,13 @@ fun KsocAppContainer(
         viewModel.authInfo.onEach { authState ->
             if (authState == null) {
                 viewModel.wasLoggedIn = false
-                viewModel.navigator.navTo(NavTarget.Login) {
-                    popUpTo(NavTarget.Home.route) { inclusive = true }
+                viewModel.navigator.navigate(RootNavTarget.Login.route) {
+                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                 }
             } else if (!viewModel.wasLoggedIn) {
                 viewModel.wasLoggedIn = true
-                viewModel.navigator.navTo(NavTarget.Home) {
-                    popUpTo(NavTarget.Login.route) { inclusive = true }
+                viewModel.navigator.navigate(RootNavTarget.Home.route) {
+                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                 }
             }
         }.launchIn(this)

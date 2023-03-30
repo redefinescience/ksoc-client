@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.kotlineering.ksoc.client.android.presentation.screens.home.HomeScreen
+import com.kotlineering.ksoc.client.android.presentation.screens.home.HomeScreenRoute
 import com.kotlineering.ksoc.client.android.presentation.screens.login.loginNavGraph
 
 @Composable
@@ -16,12 +16,12 @@ fun KsocNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavTarget.Home.route,
+        startDestination = RootNavTarget.Home.route,
         modifier = modifier
     ) {
-        loginNavGraph(NavTarget.Login.route, navController)
-        composable(NavTarget.Home.route) {
-            HomeScreen(navigator)
+        loginNavGraph(RootNavTarget.Login.route, navigator)
+        composable(RootNavTarget.Home.route) {
+            HomeScreenRoute(navigator)
         }
     }
 }

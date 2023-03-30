@@ -18,9 +18,6 @@ class LoginViewModel(
     fun login(type: AuthRepository.AuthType, code: String) = viewModelScope.launch {
         authRepository.login(type, code).collect {
             mutableLoginState.emit(it)
-            if (it is LoginAttempt.Success) {
-                authRepository.authInfo = it.authInfo
-            }
         }
     }
 

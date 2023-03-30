@@ -11,20 +11,20 @@ import kotlinx.coroutines.flow.asSharedFlow
 class KsocNavigator {
 
     data class NavRequest(
-        val target: NavTarget,
+        val route: String,
         val navOptions: NavOptions? = null,
         val navigatorExtras: Navigator.Extras? = null
     )
 
-    private val _navTarget = MutableSharedFlow<NavRequest>()
+    private val _navTarget = MutableSharedFlow<NavRequest>(extraBufferCapacity = 2)
     val navTarget: Flow<NavRequest> = _navTarget.asSharedFlow()
 
-    suspend fun navTo(target: NavTarget, builder: NavOptionsBuilder.() -> Unit) =
-        navTo(target, navOptions(builder), null)
+    fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) =
+        navigate(route, navOptions(builder), null)
 
-    suspend fun navTo(
-        target: NavTarget,
+    fun navigate(
+        route: String,
         navOptions: NavOptions? = null,
         navigatorExtras: Navigator.Extras? = null
-    ) = _navTarget.emit(NavRequest(target, navOptions, navigatorExtras))
+    ) = _navTarget.tryEmit(NavRequest(route, navOptions, navigatorExtras))
 }

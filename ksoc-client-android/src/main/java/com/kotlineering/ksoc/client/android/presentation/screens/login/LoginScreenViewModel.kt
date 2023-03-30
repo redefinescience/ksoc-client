@@ -7,6 +7,6 @@ class LoginScreenViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
     fun fakeLogin(type: AuthRepository.AuthType)  {
-        authRepository.authInfo = authRepository.loginFake(type, "")
+        authRepository.loginFake(type, "")
     }
 }

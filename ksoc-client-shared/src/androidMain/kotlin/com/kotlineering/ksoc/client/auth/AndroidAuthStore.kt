@@ -31,9 +31,9 @@ class AndroidAuthStore(
                 prefs.getLong(AuthStore.KEY_REFRESH_EXPIRY, 0).takeIf { it > 0 }?.let { rExp ->
                     prefs.getString(AuthStore.KEY_CURRENT_USER_ID, null)?.let { uId ->
                         AuthInfo(
+                            uId,
                             b, Instant.fromEpochMilliseconds(bExp),
                             r, Instant.fromEpochMilliseconds(rExp),
-                            uId
                         )
                     }
                 }
