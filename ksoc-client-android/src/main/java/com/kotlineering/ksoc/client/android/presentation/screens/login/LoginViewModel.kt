@@ -12,6 +12,7 @@ class LoginViewModel(
     private val authService: AuthService
 ) : ViewModel() {
 
+    // TODO: Custom state for idle/busy/ok/fail - Common Template - ServiceResultConverter
     private val mutableLoginState = MutableStateFlow<ServiceResult<String>?>(null)
     val loginState = mutableLoginState.asStateFlow()
 

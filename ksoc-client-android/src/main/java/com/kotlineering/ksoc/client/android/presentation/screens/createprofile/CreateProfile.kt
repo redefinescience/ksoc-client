@@ -4,10 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
@@ -30,9 +34,11 @@ class CreateProfileViewModel(
         viewModelScope, SharingStarted.Lazily, null
     )
 
+    // TODO: Custom state for idle/busy/ok/fail - Common Template - ServiceResultConverter
+
     fun createProfile(userInfo: UserInfo) = viewModelScope.launch {
         authService.updateProfile(userInfo).collect {
-
+            // Do something with result
         }
     }
 
@@ -49,7 +55,9 @@ fun CreateProfileRoute(
     val userId by viewModel.userId.collectAsStateWithLifecycle()
 
     userId?.let { id ->
-        CreateProfileScreen(id, viewModel::logout, viewModel::createProfile)
+        CreateProfileScreen(id, viewModel::logout) { s, e ->
+            viewModel.createProfile(UserInfo(id, s, e, null))
+        }
     }
 }
 
@@ -57,17 +65,35 @@ fun CreateProfileRoute(
 fun CreateProfileScreen(
     userId: String,
     logout: () -> Unit,
-    onCreateProfile: (UserInfo) -> Unit,
+    onCreateProfile: (screenName: String, email: String) -> Unit,
 ) {
+    var screenName by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
         Column {
-            Text("TODO: Create Profile")
+            Text("Create Profile")
+            Text("")
+            OutlinedTextField(
+                value = screenName,
+                onValueChange = { screenName = it },
+                label = { Text("Screen Name") }
+            )
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") }
+            )
+            Text("")
+            ClickableText(text = AnnotatedString("Create Profile"), onClick = {
+                onCreateProfile(screenName, email)
+            })
             Text("")
             ClickableText(text = AnnotatedString("Log Out"), onClick = {
-                logout.invoke()
+                logout()
             })
         }
     }

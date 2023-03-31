@@ -2,10 +2,12 @@ package com.kotlineering.ksoc.client.remote.auth
 
 import com.kotlineering.ksoc.client.domain.auth.AuthInfo
 import com.kotlineering.ksoc.client.domain.auth.AuthService
+import com.kotlineering.ksoc.client.domain.user.UserInfo
 import com.kotlineering.ksoc.client.remote.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -26,10 +28,23 @@ class AuthApi(private val httpClient: HttpClient) {
 
     // TODO: Common BaseURL/ContentType function..
 
+    suspend fun updateUserProfile(
+        userInfo: UserInfo
+    ) = httpClient.put("http://10.0.2.2:8080/profile") {
+        contentType(ContentType.Application.Json)
+        setBody(userInfo)
+    }.let { response ->
+        if (response.status.isSuccess()) {
+            ApiResult.Success(response.body<UserInfo>())
+        } else {
+            ApiResult.Failure(response.status.description)
+        }
+    }
+
     suspend fun login(
         type: AuthService.AuthType,
         code: String
-    ) = httpClient.post("http://10.0.2.2:8080/login") {
+    ) = httpClient.post("http://10.0.2.2:8080/authorize") {
         contentType(ContentType.Application.Json)
         setBody(
             LoginRequest(

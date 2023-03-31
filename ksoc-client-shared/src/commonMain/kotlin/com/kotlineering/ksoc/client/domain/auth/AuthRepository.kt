@@ -108,7 +108,15 @@ class AuthRepository(
 
     internal suspend fun performUpdateProfile(
         userInfo: UserInfo
-    ): ApiResult<UserInfo> {
-        return ApiResult.Success(userInfo)
+    ): ApiResult<UserInfo> = authApi.updateUserProfile(
+        userInfo
+    ).also { result ->
+        if (result is ApiResult.Success) {
+            setAuthInfo(
+                requireNotNull(authInfo.value).copy(
+                    userInfo = result.data
+                )
+            )
+        }
     }
 }
