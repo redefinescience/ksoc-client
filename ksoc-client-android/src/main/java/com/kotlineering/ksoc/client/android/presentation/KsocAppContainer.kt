@@ -21,10 +21,6 @@ class KsocAppContainerViewModel(
     val navigator = KsocNavigator()
     val authState = authService.authState
     val initialAuthState = authService.currentAuthState
-
-    // Old
-//    val authInfo = authService.authInfo
-//    var wasLoggedIn = false
 }
 
 private fun routeFromAuthState(
@@ -58,26 +54,6 @@ fun KsocAppContainer(
                 popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
             }
         }.launchIn(this)
-
-//        viewModel.authInfo.onEach { authState ->
-//            if (authState == null) {
-//                viewModel.wasLoggedIn = false
-//                viewModel.navigator.navigate(RootNavTarget.Login.route) {
-//                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-//                }
-//            } else if (!viewModel.wasLoggedIn) {
-//                // TODO: revisit wasLoggedIn logic- won't work with createprofile/home
-//                viewModel.wasLoggedIn = true
-//                viewModel.navigator.navigate(
-//                    when (authState.userInfo) {
-//                        null -> RootNavTarget.CreateProfile.route
-//                        else -> RootNavTarget.Home.route
-//                    }
-//                ) {
-//                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-//                }
-//            }
-//        }.launchIn(this)
     }
 
     KsocNavHost(
