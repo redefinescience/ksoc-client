@@ -1,7 +1,7 @@
 package com.kotlineering.ksoc.client.remote
 
 import com.kotlineering.ksoc.client.auth.AuthInfo
-import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.auth.AuthService
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -13,7 +13,7 @@ import io.ktor.util.toLowerCasePreservingASCIIRules
 
 class AuthApi(private val httpClient: HttpClient) {
     @kotlinx.serialization.Serializable
-    data class LoginFrom(
+    data class LoginRequest(
         val type: String,
         val code: String
     )
@@ -26,12 +26,12 @@ class AuthApi(private val httpClient: HttpClient) {
     // TODO: Common BaseURL/ContentType function..
 
     suspend fun login(
-        type: AuthRepository.AuthType,
+        type: AuthService.AuthType,
         code: String
     ) = httpClient.post("http://10.0.2.2:8080/login") {
         contentType(ContentType.Application.Json)
         setBody(
-            LoginFrom(
+            LoginRequest(
                 type.name.toLowerCasePreservingASCIIRules(), code
             )
         )

@@ -1,6 +1,7 @@
 package com.kotlineering.ksoc.client.auth
 
 import android.content.SharedPreferences
+import com.kotlineering.ksoc.client.user.UserInfo
 import kotlinx.datetime.Instant
 
 class AndroidAuthStore(
@@ -14,14 +15,37 @@ class AndroidAuthStore(
                 putString(AuthStore.KEY_REFRESH_TOKEN, refresh)
                 putLong(AuthStore.KEY_REFRESH_EXPIRY, refreshExpiry.toEpochMilliseconds())
                 putString(AuthStore.KEY_CURRENT_USER_ID, userId)
+                userInfo?.email?.let {
+                    putString(AuthStore.KEY_CURRENT_USER_EMAIL, it)
+                } ?: remove(AuthStore.KEY_CURRENT_USER_EMAIL)
+                userInfo?.displayName?.let {
+                    putString(AuthStore.KEY_CURRENT_USER_DISPLAYNAME, it)
+                } ?: remove(AuthStore.KEY_CURRENT_USER_DISPLAYNAME)
+                userInfo?.image?.let {
+                    putString(AuthStore.KEY_CURRENT_USER_IMAGE, it)
+                } ?: remove(AuthStore.KEY_CURRENT_USER_IMAGE)
             } ?: run {
                 remove(AuthStore.KEY_BEARER_TOKEN)
                 remove(AuthStore.KEY_BEARER_EXPIRY)
                 remove(AuthStore.KEY_REFRESH_TOKEN)
                 remove(AuthStore.KEY_REFRESH_EXPIRY)
                 remove(AuthStore.KEY_CURRENT_USER_ID)
+                remove(AuthStore.KEY_CURRENT_USER_EMAIL)
+                remove(AuthStore.KEY_CURRENT_USER_DISPLAYNAME)
+                remove(AuthStore.KEY_CURRENT_USER_IMAGE)
             }
             apply()
+        }
+    }
+
+    private fun fetchUserInfo(
+        userId: String
+    ) = prefs.getString(AuthStore.KEY_CURRENT_USER_EMAIL, null)?.let { e ->
+        prefs.getString(AuthStore.KEY_CURRENT_USER_DISPLAYNAME, null)?.let { n ->
+            UserInfo(
+                userId, e, n,
+                prefs.getString(AuthStore.KEY_CURRENT_USER_IMAGE, null)
+            )
         }
     }
 
@@ -34,6 +58,7 @@ class AndroidAuthStore(
                             uId,
                             b, Instant.fromEpochMilliseconds(bExp),
                             r, Instant.fromEpochMilliseconds(rExp),
+                            fetchUserInfo(uId)
                         )
                     }
                 }

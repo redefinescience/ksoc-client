@@ -7,7 +7,7 @@ import android.webkit.WebView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kotlineering.ksoc.client.android.presentation.screens.login.LoginViewModel
-import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.auth.AuthService
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -20,7 +20,7 @@ fun LoginWebViewRoute(
 @Composable
 fun LoginWebView(
     client: LoginWebViewClient,
-    onLogin: (type: AuthRepository.AuthType, code: String) -> Unit
+    onLogin: (type: AuthService.AuthType, code: String) -> Unit
 ) {
     AndroidView(
         factory = {

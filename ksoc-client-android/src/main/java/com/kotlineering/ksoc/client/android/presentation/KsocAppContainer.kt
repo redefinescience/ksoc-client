@@ -9,17 +9,17 @@ import androidx.navigation.compose.rememberNavController
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavHost
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavigator
 import com.kotlineering.ksoc.client.android.presentation.navigation.RootNavTarget
-import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.auth.AuthService
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.koinViewModel
 
 class KsocAppContainerViewModel(
-    authRepository: AuthRepository
+    authService: AuthService
 ) : ViewModel() {
     val navigator = KsocNavigator()
 
-    val authInfo = authRepository.authInfo
+    val authInfo = authService.authInfo
     var wasLoggedIn = false
 }
 
@@ -46,8 +46,14 @@ fun KsocAppContainer(
                     popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                 }
             } else if (!viewModel.wasLoggedIn) {
+                // TODO: revisit wasLoggedIn logic- won't work with createprofile/home
                 viewModel.wasLoggedIn = true
-                viewModel.navigator.navigate(RootNavTarget.Home.route) {
+                viewModel.navigator.navigate(
+                    when (authState.userInfo) {
+                        null -> RootNavTarget.CreateProfile.route
+                        else -> RootNavTarget.Home.route
+                    }
+                ) {
                     popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                 }
             }

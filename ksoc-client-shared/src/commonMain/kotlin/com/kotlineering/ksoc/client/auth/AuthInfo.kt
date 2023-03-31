@@ -1,5 +1,6 @@
 package com.kotlineering.ksoc.client.auth
 
+import com.kotlineering.ksoc.client.user.UserInfo
 import kotlinx.datetime.Instant
 
 @kotlinx.serialization.Serializable
@@ -9,4 +10,5 @@ data class AuthInfo(
     val bearerExpiry: Instant,
     val refresh: String,
     val refreshExpiry: Instant,
+    val userInfo: UserInfo?
 )

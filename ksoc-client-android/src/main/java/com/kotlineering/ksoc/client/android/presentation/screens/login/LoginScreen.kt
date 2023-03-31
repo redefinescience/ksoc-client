@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavigator
-import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.auth.AuthService
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -22,7 +22,7 @@ fun LoginScreenRoute(
 @Composable
 fun LoginScreen(
     navigator: KsocNavigator,
-    onFakeLogin: (AuthRepository.AuthType) -> Unit = {}
+    onFakeLogin: (AuthService.AuthType) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -36,15 +36,15 @@ fun LoginScreen(
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Google"), onClick = {
-                onFakeLogin(AuthRepository.AuthType.Google)
+                onFakeLogin(AuthService.AuthType.Google)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Apple"), onClick = {
-                onFakeLogin(AuthRepository.AuthType.Apple)
+                onFakeLogin(AuthService.AuthType.Apple)
             })
             Text("")
             ClickableText(text = AnnotatedString("Log In - Facebook"), onClick = {
-                onFakeLogin(AuthRepository.AuthType.Facebook)
+                onFakeLogin(AuthService.AuthType.Facebook)
             })
         }
     }

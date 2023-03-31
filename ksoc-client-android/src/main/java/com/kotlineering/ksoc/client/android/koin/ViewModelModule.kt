@@ -1,6 +1,7 @@
 package com.kotlineering.ksoc.client.android.koin
 
 import com.kotlineering.ksoc.client.android.presentation.KsocAppContainerViewModel
+import com.kotlineering.ksoc.client.android.presentation.screens.createprofile.CreateProfileViewModel
 import com.kotlineering.ksoc.client.android.presentation.screens.home.HomeScreenViewModel
 import com.kotlineering.ksoc.client.android.presentation.screens.login.LoginScreenViewModel
 import com.kotlineering.ksoc.client.android.presentation.screens.login.LoginViewModel
@@ -12,4 +13,5 @@ val viewModelModule = module {
     viewModel { LoginScreenViewModel(get()) }
     viewModel { HomeScreenViewModel(get()) }
     viewModel { LoginViewModel(get()) }
+    viewModel { CreateProfileViewModel(get(), get()) }
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 
 sealed interface LoginAttempt {
@@ -20,7 +21,7 @@ sealed interface LoginAttempt {
     data class Failure(val error: String) : LoginAttempt
 }
 
-class AuthRepository(
+class AuthService(
     private val authStore: AuthStore,
     private val httpClientManager: HttpClientManager,
     private val authApi: AuthApi,
@@ -33,8 +34,9 @@ class AuthRepository(
     private val mutableAuthInfo = MutableStateFlow(authStore.fetchAuthInfo())
 
     val authInfo = mutableAuthInfo.asStateFlow()
+    val userInfo = authInfo.map { it?.userInfo }
 
-    private fun setAuthInfo(
+    fun setAuthInfo(
         authInfo: AuthInfo?
     ) = authStore.storeAuthInfo(authInfo).also {
         httpClientManager.takeIf { it.isAuthSet }?.setAuth(authInfo) { performAutoRefresh(it) }
@@ -58,7 +60,8 @@ class AuthRepository(
                         tempToken,
                         tempExpiry,
                         tempRefresh,
-                        tempRefreshExpiry
+                        tempRefreshExpiry,
+                        old.userInfo
                     ).also { authStore.storeAuthInfo(it) }
                 }
                 BearerTokens(tempToken, tempRefresh)
@@ -81,7 +84,8 @@ class AuthRepository(
                 "fdsa",
                 Clock.System.now(),
                 "321",
-                Clock.System.now()
+                Clock.System.now(),
+                old.userInfo
             )
         } else {
             null
@@ -132,7 +136,8 @@ class AuthRepository(
                 code,
                 Clock.System.now(),
                 "testRefresh",
-                Clock.System.now()
+                Clock.System.now(),
+                null
             )
         )
     }

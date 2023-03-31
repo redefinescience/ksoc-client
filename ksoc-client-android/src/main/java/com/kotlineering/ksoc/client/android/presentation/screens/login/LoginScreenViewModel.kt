@@ -1,12 +1,12 @@
 package com.kotlineering.ksoc.client.android.presentation.screens.login
 
 import androidx.lifecycle.ViewModel
-import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.auth.AuthService
 
 class LoginScreenViewModel(
-    private val authRepository: AuthRepository
+    private val authService: AuthService
 ) : ViewModel() {
-    fun fakeLogin(type: AuthRepository.AuthType)  {
-        authRepository.loginFake(type, "")
+    fun fakeLogin(type: AuthService.AuthType)  {
+        authService.loginFake(type, "")
     }
 }

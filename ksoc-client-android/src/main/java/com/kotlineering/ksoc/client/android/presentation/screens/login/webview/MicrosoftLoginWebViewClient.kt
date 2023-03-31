@@ -2,7 +2,7 @@ package com.kotlineering.ksoc.client.android.presentation.screens.login.webview
 
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
-import com.kotlineering.ksoc.client.auth.AuthRepository
+import com.kotlineering.ksoc.client.auth.AuthService
 
 class MicrosoftLoginWebViewClient : LoginWebViewClient() {
     // TODO: This should come from backend
@@ -22,6 +22,6 @@ class MicrosoftLoginWebViewClient : LoginWebViewClient() {
         // TODO: This condition should be improved, and include the 'state' & 'nonce' validation
         it.host == "localhost" && it.port == 5000
     }?.getQueryParameter("code")?.let { code ->
-        onSuccess?.invoke(AuthRepository.AuthType.Microsoft, code)
+        onSuccess?.invoke(AuthService.AuthType.Microsoft, code)
     }
 }
