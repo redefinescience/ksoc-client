@@ -1,4 +1,4 @@
-package com.kotlineering.ksoc.client.auth
+package com.kotlineering.ksoc.client.domain.auth
 
 interface AuthStore {
     fun storeAuthInfo(authInfo: AuthInfo?)

@@ -1,7 +1,8 @@
-package com.kotlineering.ksoc.client.remote
+package com.kotlineering.ksoc.client.remote.auth
 
-import com.kotlineering.ksoc.client.auth.AuthInfo
-import com.kotlineering.ksoc.client.auth.AuthService
+import com.kotlineering.ksoc.client.domain.auth.AuthInfo
+import com.kotlineering.ksoc.client.domain.auth.AuthService
+import com.kotlineering.ksoc.client.remote.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post

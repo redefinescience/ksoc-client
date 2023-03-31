@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavigator
-import com.kotlineering.ksoc.client.auth.AuthService
+import com.kotlineering.ksoc.client.domain.auth.AuthService
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

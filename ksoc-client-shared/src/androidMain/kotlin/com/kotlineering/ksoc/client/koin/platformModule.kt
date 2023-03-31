@@ -1,8 +1,8 @@
 package com.kotlineering.ksoc.client.koin
 
 import android.content.Context
-import com.kotlineering.ksoc.client.auth.AndroidAuthStore
-import com.kotlineering.ksoc.client.auth.AuthStore
+import com.kotlineering.ksoc.client.domain.auth.AndroidAuthStore
+import com.kotlineering.ksoc.client.domain.auth.AuthStore
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext

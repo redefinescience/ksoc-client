@@ -2,7 +2,7 @@ package com.kotlineering.ksoc.client.android.presentation.screens.login.webview
 
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
-import com.kotlineering.ksoc.client.auth.AuthService
+import com.kotlineering.ksoc.client.domain.auth.AuthService
 
 class MicrosoftLoginWebViewClient : LoginWebViewClient() {
     // TODO: This should come from backend

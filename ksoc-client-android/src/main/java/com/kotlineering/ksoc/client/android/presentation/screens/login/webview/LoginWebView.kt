@@ -7,7 +7,7 @@ import android.webkit.WebView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kotlineering.ksoc.client.android.presentation.screens.login.LoginViewModel
-import com.kotlineering.ksoc.client.auth.AuthService
+import com.kotlineering.ksoc.client.domain.auth.AuthService
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

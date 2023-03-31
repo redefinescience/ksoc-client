@@ -13,5 +13,5 @@ val viewModelModule = module {
     viewModel { LoginScreenViewModel(get()) }
     viewModel { HomeScreenViewModel(get()) }
     viewModel { LoginViewModel(get()) }
-    viewModel { CreateProfileViewModel(get(), get()) }
+    viewModel { CreateProfileViewModel(get()) }
 }

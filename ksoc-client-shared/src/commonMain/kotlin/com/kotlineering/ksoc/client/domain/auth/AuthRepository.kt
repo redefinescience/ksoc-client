@@ -1,46 +1,29 @@
-package com.kotlineering.ksoc.client.auth
+package com.kotlineering.ksoc.client.domain.auth
 
-import com.kotlineering.ksoc.client.http.HttpClientManager
+import com.kotlineering.ksoc.client.domain.ServiceResult
+import com.kotlineering.ksoc.client.domain.user.UserInfo
+import com.kotlineering.ksoc.client.HttpClientManager
 import com.kotlineering.ksoc.client.remote.ApiResult
-import com.kotlineering.ksoc.client.remote.AuthApi
+import com.kotlineering.ksoc.client.remote.auth.AuthApi
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.RefreshTokensParams
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
-
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 
-sealed interface LoginAttempt {
-    data class Success(val userId: String) : LoginAttempt
-    data class Failure(val error: String) : LoginAttempt
-}
-
-class AuthService(
+class AuthRepository(
     private val authStore: AuthStore,
     private val httpClientManager: HttpClientManager,
-    private val authApi: AuthApi,
-    private val dispatcher: CoroutineDispatcher
+    private val authApi: AuthApi
 ) {
-    enum class AuthType {
-        Microsoft, Google, Apple, Facebook,
-    }
+    internal val authInfo = MutableStateFlow(authStore.fetchAuthInfo())
 
-    private val mutableAuthInfo = MutableStateFlow(authStore.fetchAuthInfo())
-
-    val authInfo = mutableAuthInfo.asStateFlow()
-    val userInfo = authInfo.map { it?.userInfo }
-
-    fun setAuthInfo(
+    internal fun setAuthInfo(
         authInfo: AuthInfo?
     ) = authStore.storeAuthInfo(authInfo).also {
         httpClientManager.takeIf { it.isAuthSet }?.setAuth(authInfo) { performAutoRefresh(it) }
-        mutableAuthInfo.value = authInfo
+        this.authInfo.value = authInfo
     }
 
     private suspend fun performAutoRefresh(
@@ -52,10 +35,10 @@ class AuthService(
                 val tempExpiry = Clock.System.now()
                 val tempRefresh = "123"
                 val tempRefreshExpiry = Clock.System.now()
-                requireNotNull(mutableAuthInfo.value) {
+                requireNotNull(authInfo.value) {
                     "AuthInfo should not be null when performing refresh."
                 }.let { old ->
-                    mutableAuthInfo.value = AuthInfo(
+                    authInfo.value = AuthInfo(
                         old.userId,
                         tempToken,
                         tempExpiry,
@@ -94,51 +77,38 @@ class AuthService(
         setAuthInfo(it)
     }
 
-    // To be used during activity onCreate()
-    // Conditionally run this (based on expiry etc..),
-    // Do not set content until this is complete
-    suspend fun refresh() = flow {
-        emit(mutableAuthInfo.value?.let { old ->
+    internal suspend fun performManualRefresh() =
+        authInfo.value?.let { old ->
             performRefresh(old)?.let {
-                LoginAttempt.Success(old.userId)
-            } ?: LoginAttempt.Failure("Failed to refresh token")
-        } ?: LoginAttempt.Failure("No refresh token"))
-    }
+                ServiceResult.Success(old.userId)
+            } ?: ServiceResult.Failure("Failed to refresh token")
+        } ?: ServiceResult.Failure("No refresh token")
 
-    fun logout() {
-        setAuthInfo(null)
-    }
-
-    private suspend fun performLogin(
-        type: AuthType, code: String
+    internal suspend fun performLogin(
+        type: AuthService.AuthType, code: String
     ) = authApi.login(
         type, code
-    ).let { result ->
+    ).also { result ->
+        if (result is ApiResult.Success) {
+            setAuthInfo(result.data)
+        }
         when (result) {
             is ApiResult.Success ->
-                LoginAttempt.Success(result.data.userId).also {
+                ServiceResult.Success(result.data.userId).also {
                     setAuthInfo(result.data)
                 }
             is ApiResult.Failure ->
-                LoginAttempt.Failure(result.error)
+                ServiceResult.Failure(result.error)
         }
     }
 
-    fun login(type: AuthType, code: String) = flow {
-        emit(performLogin(type, code))
-    }.flowOn(dispatcher)
+    internal fun performLogout() {
+        setAuthInfo(null)
+    }
 
-    // TODO: Temp
-    fun loginFake(type: AuthType, code: String) {
-        setAuthInfo(
-            AuthInfo(
-                "testUer($type)",
-                code,
-                Clock.System.now(),
-                "testRefresh",
-                Clock.System.now(),
-                null
-            )
-        )
+    internal suspend fun performUpdateProfile(
+        userInfo: UserInfo
+    ): ApiResult<UserInfo> {
+        return ApiResult.Success(userInfo)
     }
 }

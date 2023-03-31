@@ -9,7 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavHost
 import com.kotlineering.ksoc.client.android.presentation.navigation.KsocNavigator
 import com.kotlineering.ksoc.client.android.presentation.navigation.RootNavTarget
-import com.kotlineering.ksoc.client.auth.AuthService
+import com.kotlineering.ksoc.client.domain.auth.AuthService
+import com.kotlineering.ksoc.client.domain.auth.AuthState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.koinViewModel
@@ -18,9 +19,20 @@ class KsocAppContainerViewModel(
     authService: AuthService
 ) : ViewModel() {
     val navigator = KsocNavigator()
+    val authState = authService.authState
+    val initialAuthState = authService.currentAuthState
 
-    val authInfo = authService.authInfo
-    var wasLoggedIn = false
+    // Old
+//    val authInfo = authService.authInfo
+//    var wasLoggedIn = false
+}
+
+private fun routeFromAuthState(
+    state: AuthState
+) = when (state) {
+    is AuthState.NoUser -> RootNavTarget.Login.route
+    is AuthState.NoProfile -> RootNavTarget.CreateProfile.route
+    is AuthState.LoggedIn -> RootNavTarget.Home.route
 }
 
 @Composable
@@ -39,26 +51,39 @@ fun KsocAppContainer(
 
     // Listen for changes in authentication, force navigation to login or home appropriately
     LaunchedEffect("authState") {
-        viewModel.authInfo.onEach { authState ->
-            if (authState == null) {
-                viewModel.wasLoggedIn = false
-                viewModel.navigator.navigate(RootNavTarget.Login.route) {
-                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                }
-            } else if (!viewModel.wasLoggedIn) {
-                // TODO: revisit wasLoggedIn logic- won't work with createprofile/home
-                viewModel.wasLoggedIn = true
-                viewModel.navigator.navigate(
-                    when (authState.userInfo) {
-                        null -> RootNavTarget.CreateProfile.route
-                        else -> RootNavTarget.Home.route
-                    }
-                ) {
-                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                }
+        viewModel.authState.onEach { authState ->
+            viewModel.navigator.navigate(
+                routeFromAuthState(authState)
+            ) {
+                popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
             }
         }.launchIn(this)
+
+//        viewModel.authInfo.onEach { authState ->
+//            if (authState == null) {
+//                viewModel.wasLoggedIn = false
+//                viewModel.navigator.navigate(RootNavTarget.Login.route) {
+//                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+//                }
+//            } else if (!viewModel.wasLoggedIn) {
+//                // TODO: revisit wasLoggedIn logic- won't work with createprofile/home
+//                viewModel.wasLoggedIn = true
+//                viewModel.navigator.navigate(
+//                    when (authState.userInfo) {
+//                        null -> RootNavTarget.CreateProfile.route
+//                        else -> RootNavTarget.Home.route
+//                    }
+//                ) {
+//                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+//                }
+//            }
+//        }.launchIn(this)
     }
 
-    KsocNavHost(viewModel.navigator, navController, modifier)
+    KsocNavHost(
+        viewModel.navigator,
+        navController,
+        routeFromAuthState(viewModel.initialAuthState),
+        modifier
+    )
 }

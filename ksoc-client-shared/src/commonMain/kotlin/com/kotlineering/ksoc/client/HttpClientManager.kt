@@ -1,6 +1,6 @@
-package com.kotlineering.ksoc.client.http
+package com.kotlineering.ksoc.client
 
-import com.kotlineering.ksoc.client.auth.AuthInfo
+import com.kotlineering.ksoc.client.domain.auth.AuthInfo
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth

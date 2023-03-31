@@ -13,11 +13,12 @@ import com.kotlineering.ksoc.client.android.presentation.screens.login.loginNavG
 fun KsocNavHost(
     navigator: KsocNavigator,
     navController: NavHostController,
+    startRoute: String,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
-        startDestination = RootNavTarget.Home.route,
+        startDestination = startRoute,
         modifier = modifier
     ) {
         loginNavGraph(RootNavTarget.Login.route, navigator)

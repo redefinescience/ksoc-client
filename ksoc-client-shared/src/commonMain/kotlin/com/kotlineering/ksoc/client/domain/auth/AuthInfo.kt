@@ -1,6 +1,6 @@
-package com.kotlineering.ksoc.client.auth
+package com.kotlineering.ksoc.client.domain.auth
 
-import com.kotlineering.ksoc.client.user.UserInfo
+import com.kotlineering.ksoc.client.domain.user.UserInfo
 import kotlinx.datetime.Instant
 
 @kotlinx.serialization.Serializable
