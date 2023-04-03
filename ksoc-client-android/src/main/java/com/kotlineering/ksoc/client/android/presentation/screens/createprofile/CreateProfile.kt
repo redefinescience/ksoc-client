@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-// TODO: Move Me
 class CreateProfileViewModel(
     private val authService: AuthService,
 ) : ViewModel() {

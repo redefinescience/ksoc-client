@@ -16,7 +16,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginScreenRoute(
     navigator: KsocNavigator,
-    viewModel: LoginScreenViewModel = koinViewModel()
+    viewModel: LoginViewModel = koinViewModel()
 ) = LoginScreen(navigator, viewModel::fakeLogin)
 
 @Composable

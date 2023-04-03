@@ -7,10 +7,7 @@ import com.kotlineering.ksoc.client.remote.ApiResult
 import com.kotlineering.ksoc.client.remote.auth.AuthApi
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.RefreshTokensParams
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.datetime.Clock
 
 class AuthRepository(
     private val authStore: AuthStore,
@@ -22,56 +19,42 @@ class AuthRepository(
     internal fun setAuthInfo(
         authInfo: AuthInfo?
     ) = authStore.storeAuthInfo(authInfo).also {
+        // TODO: Audit the use of it.isAuthSet - do we still need it? will it cause issues
+        // I should have commented why
         httpClientManager.takeIf { it.isAuthSet }?.setAuth(authInfo) { performAutoRefresh(it) }
         this.authInfo.value = authInfo
     }
 
     private suspend fun performAutoRefresh(
         params: RefreshTokensParams
-    ): BearerTokens? = params.oldTokens?.refreshToken?.let { refreshToken ->
-        authApi.refresh(refreshToken, params.client).let { result ->
-            if (result.status.isSuccess()) {
-                val tempToken = "asdf"
-                val tempExpiry = Clock.System.now()
-                val tempRefresh = "123"
-                val tempRefreshExpiry = Clock.System.now()
-                requireNotNull(authInfo.value) {
+    ): BearerTokens? = params.oldTokens?.let { oldTokens ->
+        authApi.refresh(
+            oldTokens.accessToken, oldTokens.refreshToken, params.client
+        ).let { result ->
+            when (result) {
+                is ApiResult.Success -> requireNotNull(authInfo.value) {
                     "AuthInfo should not be null when performing refresh."
                 }.let { old ->
-                    authInfo.value = AuthInfo(
-                        old.userId,
-                        tempToken,
-                        tempExpiry,
-                        tempRefresh,
-                        tempRefreshExpiry,
-                        old.userInfo
+                    authInfo.value = result.data.copy(
+                        userInfo = old.userInfo
                     ).also { authStore.storeAuthInfo(it) }
+                    BearerTokens(result.data.bearer, result.data.refresh)
                 }
-                BearerTokens(tempToken, tempRefresh)
-            } else {
-                setAuthInfo(null) // Try this, if not do below
-                // mutableAuthInfo.value = null
-                // authStore.storeAuthInfo(null)
-                null
+                is ApiResult.Failure -> null.also {
+                    // TODO: (need to test) Might need to store null, and save null to authInfo
+                    // (ie: skip clearing auth in http client)
+                    setAuthInfo(null)
+                }
             }
         }
     }
 
     private suspend fun performRefresh(
         old: AuthInfo
-    ) = authApi.refresh(old.refresh).let { result ->
-        if (result.status.isSuccess()) {
-            val temporary = result.bodyAsText()
-            AuthInfo(
-                old.userId,
-                "fdsa",
-                Clock.System.now(),
-                "321",
-                Clock.System.now(),
-                old.userInfo
-            )
-        } else {
-            null
+    ) = authApi.refresh(old.bearer, old.refresh).let { result ->
+        when(result) {
+            is ApiResult.Success -> result.data.copy(userInfo = old.userInfo)
+            is ApiResult.Failure -> null
         }
     }.also {
         setAuthInfo(it)
@@ -95,6 +78,7 @@ class AuthRepository(
         when (result) {
             is ApiResult.Success ->
                 ServiceResult.Success(result.data.userId).also {
+                    println(result.data)
                     setAuthInfo(result.data)
                 }
             is ApiResult.Failure ->
@@ -102,7 +86,10 @@ class AuthRepository(
         }
     }
 
-    internal fun performLogout() {
+    internal suspend fun performLogout() {
+        authInfo.value?.let { authInfo ->
+            authApi.logout(authInfo.bearer, authInfo.refresh)
+        }
         setAuthInfo(null)
     }
 

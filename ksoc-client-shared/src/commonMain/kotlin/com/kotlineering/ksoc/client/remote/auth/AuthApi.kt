@@ -4,14 +4,18 @@ import com.kotlineering.ksoc.client.domain.auth.AuthInfo
 import com.kotlineering.ksoc.client.domain.auth.AuthService
 import com.kotlineering.ksoc.client.domain.user.UserInfo
 import com.kotlineering.ksoc.client.remote.ApiResult
+import com.kotlineering.ksoc.client.remote.apiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.http.isSuccess
+import io.ktor.http.takeFrom
 import io.ktor.util.toLowerCasePreservingASCIIRules
 
 class AuthApi(private val httpClient: HttpClient) {
@@ -22,17 +26,28 @@ class AuthApi(private val httpClient: HttpClient) {
     )
 
     @kotlinx.serialization.Serializable
-    data class RefreshRequest(
-        val token: String
+    data class TokenRequest(
+        val bearer: String,
+        val refresh: String
     )
 
-    // TODO: Common BaseURL/ContentType function..
+    private fun HttpRequestBuilder.auth(path: String) {
+        url {
+            takeFrom("http://10.0.2.2:8080/")
+            encodedPath = path
+        }
+    }
+
+    private inline fun <reified T : Any> HttpRequestBuilder.auth(path: String, body: T) {
+        auth(path)
+        contentType(ContentType.Application.Json)
+        setBody(body)
+    }
 
     suspend fun updateUserProfile(
         userInfo: UserInfo
-    ) = httpClient.put("http://10.0.2.2:8080/profile") {
-        contentType(ContentType.Application.Json)
-        setBody(userInfo)
+    ) = httpClient.put {
+        auth("profile", userInfo)
     }.let { response ->
         if (response.status.isSuccess()) {
             ApiResult.Success(response.body<UserInfo>())
@@ -44,29 +59,25 @@ class AuthApi(private val httpClient: HttpClient) {
     suspend fun login(
         type: AuthService.AuthType,
         code: String
-    ) = httpClient.post("http://10.0.2.2:8080/authorize") {
-        contentType(ContentType.Application.Json)
-        setBody(
-            LoginRequest(
-                type.name.toLowerCasePreservingASCIIRules(), code
-            )
-        )
-    }.let { response ->
-        if (response.status.isSuccess()) {
-            ApiResult.Success(response.body<AuthInfo>())
-        } else {
-            ApiResult.Failure(response.status.description)
-        }
-    }
+    ) = httpClient.post {
+        auth("authorize", LoginRequest(
+            type.name.toLowerCasePreservingASCIIRules(), code
+        ))
+    }.apiResult<AuthInfo>()
 
     // client as parameter, as we might need to use one passed in instead of default
     suspend fun refresh(
-        refreshToken: String,
+        bearer: String,
+        refresh: String,
         client: HttpClient = httpClient
-    ) = client.post("http://10.0.2.2:8080/refresh") {
-        contentType(ContentType.Application.Json)
-        setBody(
-            RefreshRequest(refreshToken)
-        )
+    ) = client.post {
+        auth("refresh", TokenRequest(bearer, refresh))
+    }.apiResult<AuthInfo>()
+
+    suspend fun logout(
+        bearer: String,
+        refresh: String
+    ) = httpClient.post {
+        auth("revoke", TokenRequest(bearer, refresh))
     }
 }

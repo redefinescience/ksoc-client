@@ -25,4 +25,9 @@ class LoginViewModel(
     fun retry() = viewModelScope.launch {
         mutableLoginState.emit(null)
     }
+
+    // For WIP
+    fun fakeLogin(type: AuthService.AuthType) = viewModelScope.launch {
+        authService.loginFake(type, "")
+    }
 }
