@@ -14,15 +14,17 @@ class AuthRepository(
     private val httpClientManager: HttpClientManager,
     private val authApi: AuthApi
 ) {
-    internal val authInfo = MutableStateFlow(authStore.fetchAuthInfo())
+    internal val authInfo = MutableStateFlow(
+        onSetAuthInfo(authStore.fetchAuthInfo(), false)
+    )
 
-    internal fun setAuthInfo(
-        authInfo: AuthInfo?
-    ) = authStore.storeAuthInfo(authInfo).also {
-        // TODO: Audit the use of it.isAuthSet - do we still need it? will it cause issues
-        // I should have commented why
-        httpClientManager.takeIf { it.isAuthSet }?.setAuth(authInfo) { performAutoRefresh(it) }
-        this.authInfo.value = authInfo
+    private fun onSetAuthInfo(authInfo: AuthInfo?, store: Boolean = true) = authInfo.also {
+        authStore.takeIf { store }?.storeAuthInfo(authInfo)
+        httpClientManager.setAuth(authInfo) { performAutoRefresh(it) }
+    }
+
+    internal fun setAuthInfo(authInfo: AuthInfo?) {
+        this.authInfo.value = onSetAuthInfo(authInfo)
     }
 
     private suspend fun performAutoRefresh(
@@ -52,7 +54,7 @@ class AuthRepository(
     private suspend fun performRefresh(
         old: AuthInfo
     ) = authApi.refresh(old.bearer, old.refresh).let { result ->
-        when(result) {
+        when (result) {
             is ApiResult.Success -> result.data.copy(userInfo = old.userInfo)
             is ApiResult.Failure -> null
         }
@@ -78,7 +80,6 @@ class AuthRepository(
         when (result) {
             is ApiResult.Success ->
                 ServiceResult.Success(result.data.userId).also {
-                    println(result.data)
                     setAuthInfo(result.data)
                 }
             is ApiResult.Failure ->
