@@ -48,7 +48,7 @@ class AuthApi(private val httpClient: HttpClient) {
     suspend fun updateUserProfile(
         userInfo: UserInfo
     ) = httpClient.put {
-        auth("profile", userInfo)
+        auth("profile/${userInfo.id}", userInfo)
     }.let { response ->
         if (response.status.isSuccess()) {
             ApiResult.Success(response.body<UserInfo>())
