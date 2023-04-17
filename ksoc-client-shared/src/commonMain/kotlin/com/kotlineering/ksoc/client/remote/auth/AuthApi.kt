@@ -33,6 +33,7 @@ class AuthApi(private val httpClient: HttpClient) {
 
     private fun HttpRequestBuilder.auth(path: String) {
         url {
+            // TODO: Configurable, injected
             takeFrom("http://10.0.2.2:8080/")
             encodedPath = path
         }

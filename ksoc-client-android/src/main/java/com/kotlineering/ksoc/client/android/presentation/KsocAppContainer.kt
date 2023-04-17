@@ -48,10 +48,10 @@ fun KsocAppContainer(
     // Listen for changes in authentication, force navigation to login or home appropriately
     LaunchedEffect("authState") {
         viewModel.authState.onEach { authState ->
-            viewModel.navigator.navigate(
-                routeFromAuthState(authState)
-            ) {
-                popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+            viewModel.navigator.navigate(routeFromAuthState(authState)) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    inclusive = true
+                }
             }
         }.launchIn(this)
     }
