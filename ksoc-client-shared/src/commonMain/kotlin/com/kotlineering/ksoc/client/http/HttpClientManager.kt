@@ -16,7 +16,7 @@ class HttpClientManager(
     engine: HttpClientEngine
 ) {
     val client: HttpClient = createHttpClient(engine)
-    val isAuthSet = client.plugin(Auth).providers.size == 0
+    val isAuthSet: Boolean get() = client.plugin(Auth).providers.size == 0
 
     fun setAuth(
         auth: AuthInfo?,
